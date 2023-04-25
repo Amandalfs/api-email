@@ -43,13 +43,14 @@ const enviarEmail = (app)=>{
                         res.status(201).send("Email Enviado")
                         return
                     })
-                    .catch((error) => {
-                        console.error(error)
-                        res.send({error})
+                    .catch((error2) => {
+                        console.error(error2)
+                        res.send({error2})
                 })
 
             } catch (error) {
                 console.log(error)
+                res.send(error)
             }
            
         })
