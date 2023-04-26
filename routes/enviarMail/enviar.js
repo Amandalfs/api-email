@@ -1,31 +1,38 @@
 const sgMail = require('@sendgrid/mail')
 const { config } = require('dotenv');
+const { text } = require('express');
 config()
+
+const validarEntradaDeDadosBody = (req, res, next) => {
+    const {texto, emailReceive, titulo} = req.body;
+
+    const errors = [];
+
+    if(!texto){
+        errors.push("Campo texto vazio")
+    } 
+
+    if(!emailReceive){
+        errors.push("Email vazio");
+    }
+
+    if(!titulo){
+        errors.push("Titulo Vazio");
+    }
+
+    if(errors.length!==0){
+        res.status(400).send({errors})
+        return
+    }
+    const dadosBodyTratado = {texto, emailReceive, titulo}
+    next();
+}
 
 const enviarEmail = (app)=>{
     app.route('/send')
-        .post((req, res)=>{
-            const {texto, emailReceive, titulo} = req.body;
-
-            const errors = [];
-
-            if(!texto){
-                errors.push("Campo texto vazio")
-            } 
-
-            if(!emailReceive){
-                errors.push("Email vazio");
-            }
-
-            if(!emailReceive){
-                errors.push("Titulo Vazio");
-            }
-
-            if(errors.length!==0){
-                res.status(400).send({errors})
-                return
-            }
-
+        .post(validarEntradaDeDadosBody,(req, res)=>{
+            const {texto, emailReceive, titulo} = req.body
+            
             try {   
                 const msg = {
                     to: emailReceive, // Change to your recipient
